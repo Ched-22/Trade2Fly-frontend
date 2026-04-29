@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { describeFetchError } from '../lib/api.js';
-import { useAuth } from '../context/useAuth.js';
+import { createUser } from '../services/user.service';
 
 export default function Register() {
     const navigate = useNavigate();
-    const { register } = useAuth();
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [displayName, setDisplayName] = useState('');
     const [error, setError] = useState('');
     const [pending, setPending] = useState(false);
 
@@ -17,12 +16,13 @@ export default function Register() {
         setError('');
         setPending(true);
         try {
-            await register({
+            await createUser({
+                name: name.trim(),
                 email: email.trim(),
                 password,
-                displayName: displayName.trim() || undefined,
             });
-            navigate('/', { replace: true });
+            alert('Usuário criado!');
+            navigate('/login', { replace: true });
         } catch (err) {
             setError(describeFetchError(err, 'Erro ao registar'));
         } finally {
@@ -44,18 +44,19 @@ export default function Register() {
                     ) : null}
                     <div>
                         <label
-                            htmlFor="displayName"
+                            htmlFor="name"
                             className="block text-sm font-medium text-gray-300"
                         >
-                            Nome (opcional)
+                            Nome
                         </label>
                         <input
                             type="text"
-                            id="displayName"
-                            name="displayName"
-                            placeholder="Como aparece na loja"
-                            value={displayName}
-                            onChange={(e) => setDisplayName(e.target.value)}
+                            id="name"
+                            name="name"
+                            placeholder="Nome"
+                            required
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             className="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-700 rounded-md focus:outline-none focus:ring focus:ring-blue-500 text-gray-100"
                         />
                     </div>

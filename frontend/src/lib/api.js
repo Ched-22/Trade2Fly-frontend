@@ -21,18 +21,10 @@ export function setStoredToken(token) {
 
 function apiBase() {
     const env = import.meta.env.VITE_API_URL;
-    if (env != null && String(env).trim() !== '') {
-        return String(env).replace(/\/$/, '');
+    if (!env) {
+        throw new Error('VITE_API_URL não definido');
     }
-    // Dev: relative URL → Vite proxies /api to Nest (see vite.config.js). Avoids cross-origin NetworkError.
-    if (import.meta.env.DEV) {
-        return '/api';
-    }
-    // Production preview / static hosting without env: assume reverse-proxy serves API under /api
-    if (typeof window !== 'undefined') {
-        return '/api';
-    }
-    return 'http://127.0.0.1:3000/api';
+    return env.replace(/\/$/, '');
 }
 
 /**
