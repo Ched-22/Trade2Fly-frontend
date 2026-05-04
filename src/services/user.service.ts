@@ -5,12 +5,17 @@ export async function createUser(data: {
     email: string;
     password: string;
 }) {
-    const res = await fetch(`${API_URL}/users`, {
+    const res = await fetch(`${API_URL}/auth/register`, {  // ← era /users, agora é /auth/register
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+            email: data.email,
+            password: data.password,
+            displayName: data.name,   // ← o backend espera displayName
+            name: data.name,
+        }),
     });
 
     const body = await res.json().catch(() => ({}));
@@ -20,4 +25,4 @@ export async function createUser(data: {
         throw new Error(text ? String(text) : `HTTP ${res.status}`);
     }
     return body;
-} 
+}
